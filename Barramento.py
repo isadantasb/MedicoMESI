@@ -26,7 +26,6 @@ class Barramento:
         return linha.status
                 
 
-
     def busca_para_escrita(self, endereco, id_processador):
         #busca usando as funções de busca. Coloca o dado no endereço desejado (que vai estar S) e dps troca pra M.
         valor = self.busca_processador(endereco, id_processador)
