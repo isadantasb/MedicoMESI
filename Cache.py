@@ -21,8 +21,11 @@ class Cache:
         return self.qtd == self.tam_max
     
     def remove(self):
-        #remove DO TOPO quando estiver cheia pra dai add na MP
-        pass
+        #na vdd ela n ta removendo nada, só ta retornando o topo, quem vai remover de verdade é o Processador.
+        if self.cheia():
+            rem = self.elementos[self.topo]
+            self.qtd -=1
+            return rem
     
     def insere(self, x: CacheLine):
         #se tiver vazia ou tiver espaço vazio só insere. Mas se o topo estiver ocupado tem que remover (e add ele na MP) e ai sim inserir
@@ -30,6 +33,7 @@ class Cache:
             self.remove()
         self.elementos[self.topo] = x
         self.topo = (self.topo + 1) % self.tam_max
+        self.qtd +=1
 
     def printar_cache(self):
         print("---- CACHE ----")
