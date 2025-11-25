@@ -1,8 +1,10 @@
 class CacheLine:
-    def __init__(self):
-        self.protocolo = None #MOESI
-        self.status = None #status do paciente
-        self.endereco = None #endereço da MP que o paciente se encontra
+    def __init__(self, endereco, status, protocolo):
+        self.endereco = endereco #endereço da MP que o paciente se encontra
+        self.status = status #status do paciente
+        self.protocolo = protocolo #MOESI
+        
+        
 
     def vazio(self): 
         return self.endereco == None
