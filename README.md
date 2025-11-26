@@ -1,8 +1,5 @@
-O repositório **MedicoMESI** ainda está sem uma descrição clara ou arquivos que indiquem o propósito e funcionalidades do projeto. Vamos criar um README básico como ponto de partida.  
 
-### Exemplo de um `README.md`
 
-```markdown
 # MedicoMESI
 
 Bem-vindo(a) ao repositório **MedicoMESI**! Este projeto foi desenvolvido utilizando **Python**.
@@ -37,13 +34,6 @@ Bem-vindo(a) ao repositório **MedicoMESI**! Este projeto foi desenvolvido utili
 ```bash
 python main.py
 ```
-
-## Contribuindo
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir **issues** ou enviar **pull requests**.
-
-## Licença
-
 (Espécifique a licença do projeto ou utilize algo como "Licença ainda não especificada.")
 
 ---
