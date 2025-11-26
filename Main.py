@@ -1,39 +1,11 @@
-import os
 from Memoria import *
 from Processador import *
 from Barramento import *
 
-# Função de impressão do estado geral gerada automaticamente; será revisada futuramente.
 def imprimir_estado_geral(memoria, processadores):
-    """
+    '''
     Exibe o estado completo do sistema: RAM + Caches
-    Requisito: "Deve ser possível visualizar... a qualquer momento"
-    """
-    print("\n" + "="*60)
-    print("STATUS GERAL DO SISTEMA (MOESI)")
-    print("="*60)
-    
-    # 1. Mostrar um resumo da RAM (apenas as primeiras 10 posições para não poluir)
-    print("\n[MEMÓRIA PRINCIPAL (RAM) - Primeiras 10 Posições]")
-    for i in range(10):
-        val = memoria.ler(i)
-        # Tradução simples só para visualização
-        status = {1:"Triagem", 2:"Atendimento", 3:"Medicação", 4:"Alta"}.get(val, str(val))
-        print(f"| End {i:02d}: {val} ({status}) ", end="")
-        if (i+1) % 2 == 0: print("|") # Quebra de linha a cada 2
-    if 10 % 2 != 0:
-        print("|")  # Garante quebra de linha se número de posições for ímpar
-    print("| ... (mais 40 posições ocultas) ... |")
-    if memoria_tam > 10:
-        print("| ... (mais 40 posições ocultas) ... |")
-    else:
-        print("|")
-
-    # 2. Mostrar as Caches de cada processador
-    for p in processadores:
-        p.mostrar_visao_interna()
-    
-    print("="*60 + "\n")
+    '''
 
 
 def main():
