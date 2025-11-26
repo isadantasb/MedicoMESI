@@ -15,6 +15,7 @@ class Cache:
     
     def remove(self):
         rem = self.elementos[self.topo]
+        self.topo = (self.topo + 1) % self.tam_max
         return rem
         
     def insere(self, linha_nova: CacheLine):
@@ -29,3 +30,11 @@ class Cache:
             if linha is None or linha.protocolo == "I":
                 self.elementos[i] = linha_nova
                 return 
+        #caso write back !!!! 
+        linha_expulsa = self.remove()
+
+        # Inserir na posição que acabou de ser liberada (topo-1)
+        pos = (self.topo - 1) % self.tam_max
+        self.elementos[pos] = linha_nova
+
+        return linha_expulsa

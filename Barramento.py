@@ -22,7 +22,10 @@ class Barramento:
             linha.protocolo = "O"
         if linha.protocolo == "E":
             linha.protocolo = "S"
-        cache_solicitante.insere(CacheLine(endereco, linha.status, "S"))
+        c= cache_solicitante.insere(CacheLine(endereco, linha.status, "S"))
+        if c and c.protocolo in ("M", "O"):
+            self.memoria.escrever(c.endereco, c.status)
+            print(f"[WRITE-BACK] Endereço {c.endereco} → {c.status}")
         return linha.status
                 
 
@@ -42,7 +45,10 @@ class Barramento:
         #busca o dado do endereço na MP, altera o status da CacheLine pra E se achar
         valor = self.memoria.ler(endereco)
         linha = CacheLine(endereco, valor, "E")
-        self.caches[id_processador].insere(linha)
+        c = self.caches[id_processador].insere(linha)
+        if c and c.protocolo in ("M", "O"):
+            self.memoria.escrever(c.endereco, c.status)
+            print(f"[WRITE-BACK] Endereço {c.endereco} → {c.status}")
         return valor
 
     def invalida(self, endereco, id_processador):
