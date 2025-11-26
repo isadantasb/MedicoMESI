@@ -5,15 +5,14 @@ class MemoriaPrincipal:
         self.tamanho = tam
         self.celulas = [randint(1, 4) for _ in range(tam)] #Vi isso aqui na net mas não sei se é o melhor jeito #acho legal 
     
-    def ler(self, endereco):
+    def ler_bloco(self, endereco):
         self.validaendereco(endereco)
-        return self.celulas[endereco]
+        return self.celulas[endereco:endereco+5]
     
-    def escrever(self, endereco, valor):
+    def escrever_bloco(self, endereco, dados):
         self.validaendereco(endereco)
-        if valor < 1 or valor > 4:
-            raise ValueError("Estado inválido (use 1 a 4)")
-        self.celulas[endereco] = valor
+        for i in range(5):
+            self.celulas[endereco + i] = dados[i]
 
     def validaendereco(self, endereco): 
         if endereco < 0 or endereco >= self.tamanho:

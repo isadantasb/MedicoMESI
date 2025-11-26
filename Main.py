@@ -18,7 +18,7 @@ def imprimir_estado_geral(memoria, processadores):
     print("-"*60)
 
     for end in range(memoria.tamanho):
-        valor = memoria.ler(end)
+        valor = memoria.ler_bloco(end)
         print(f"End {end:02d} | Valor: {valor}")
 
     # -------------------------
@@ -38,8 +38,8 @@ def imprimir_estado_geral(memoria, processadores):
             if linha is None:
                 continue   # linha vazia → ignora
 
-            end = linha.endereco if linha.endereco is not None else "--"
-            val = linha.status if linha.status is not None else "--"
+            end = linha.endereco_base if linha.endereco_base is not None else "--"
+            val = linha.dados if linha.dados is not None else "--"
             prot = linha.protocolo if linha.protocolo is not None else "--"
 
             print(f"{str(end):<10} {str(val):<10} {str(prot):<10}")

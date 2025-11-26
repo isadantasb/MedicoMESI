@@ -22,11 +22,11 @@ class Barramento:
             linha.protocolo = "O"
         if linha.protocolo == "E":
             linha.protocolo = "S"
-        c= cache_solicitante.insere(CacheLine(endereco, linha.status, "S"))
+        c= cache_solicitante.insere(CacheLine(linha.endereco_base, linha.dados.copy(), "S"))
         if c and c.protocolo in ("M", "O"):
-            self.memoria.escrever(c.endereco, c.status)
-            print(f"[WRITE-BACK] Endereço {c.endereco} → {c.status}")
-        return linha.status
+            self.memoria.escrever_bloco(c.endereco_base, c.dados)
+            print(f"[WRITE-BACK] Endereço {c.endereco_base} → {c.dados}")
+        return linha.dados[endereco-linha.endereco_base]
                 
 
     def busca_para_escrita(self, endereco, id_processador, novo_valor):
@@ -36,20 +36,22 @@ class Barramento:
         self.invalida(endereco, id_processador)
 
         linha = self.caches[id_processador].busca(endereco)
-        linha.status = novo_valor
+        ind = linha.indice_no_bloco(endereco)
+        linha.dados[ind] = novo_valor
         linha.protocolo = "M"
 
         return valor
 
     def busca_MP(self, endereco, id_processador):
         #busca o dado do endereço na MP, altera o status da CacheLine pra E se achar
-        valor = self.memoria.ler(endereco)
-        linha = CacheLine(endereco, valor, "E")
+        base = (endereco // 5) * 5
+        dados = self.memoria.ler_bloco(base)
+        linha = CacheLine(base, dados, "E")
         c = self.caches[id_processador].insere(linha)
         if c and c.protocolo in ("M", "O"):
-            self.memoria.escrever(c.endereco, c.status)
-            print(f"[WRITE-BACK] Endereço {c.endereco} → {c.status}")
-        return valor
+            self.memoria.escrever_bloco(c.endereco_base, c.dados)
+            print(f"[WRITE-BACK] Endereço {c.endereco_base} → {c.dados}")
+        return dados[endereco - base]
 
     def invalida(self, endereco, id_processador):
         #se fizer a escrita, aqui invalida todas as outras CacheLines que tinham esse dado.

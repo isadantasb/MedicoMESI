@@ -9,7 +9,7 @@ class Cache:
     def busca(self, endereco):
         #busca um elemento dentro da cache pelo endereço buscado
         for elemento in self.elementos:
-            if elemento.endereco == endereco and elemento.protocolo != "I":
+            if elemento.contem_endereco(endereco) and elemento.protocolo != "I":
                 return elemento
         return None
     
@@ -19,9 +19,9 @@ class Cache:
         return rem
         
     def insere(self, linha_nova: CacheLine):
-        # Se já existe esse endereço na cache, substitui
+        # Se já existe esse bloco na cache, substitui
         for i, linha in enumerate(self.elementos):
-            if linha is not None and linha.endereco == linha_nova.endereco:
+            if linha.endereco_base == linha_nova.endereco_base:
                 self.elementos[i] = linha_nova
                 return 
         
