@@ -19,9 +19,3 @@ class MemoriaPrincipal:
         if endereco < 0 or endereco >= self.tamanho:
             raise IndexError("Endereço fora da memória!")
         
-    def printar(self):
-        print("------ MEMÓRIA PRINCIPAL ------")
-        for i, estado in enumerate(self.celulas):
-            print(f"Linha {i:02d}: {estado} - {[estado]}")
-        print("--------------------------------")
-    

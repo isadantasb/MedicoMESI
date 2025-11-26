@@ -7,6 +7,46 @@ def imprimir_estado_geral(memoria, processadores):
     Exibe o estado completo do sistema: RAM + Caches
     '''
 
+    print("\n" + "="*60)
+    print("ESTADO GERAL DO SISTEMA".center(60))
+    print("="*60)
+
+    # -------------------------
+    #  MOSTRAR MEMÓRIA RAM
+    # -------------------------
+    print("\nMEMÓRIA PRINCIPAL (RAM):")
+    print("-"*60)
+
+    for end in range(memoria.tamanho):
+        valor = memoria.ler(end)
+        print(f"End {end:02d} | Valor: {valor}")
+
+    # -------------------------
+    #  MOSTRAR CACHES
+    # -------------------------
+    print("\n" + "="*60)
+    print("CACHES DOS PROCESSADORES")
+    print("="*60)
+
+    for proc in processadores:
+        print(f"\nProcessador {proc.id} ({proc.nome})")
+        print("-"*60)
+        print(f"{'Endereço':<10} {'Valor':<10} {'Protocolo':<10}")
+        print("-"*60)
+
+        for linha in proc.cache.elementos:
+            if linha is None:
+                continue   # linha vazia → ignora
+
+            end = linha.endereco if linha.endereco is not None else "--"
+            val = linha.status if linha.status is not None else "--"
+            prot = linha.protocolo if linha.protocolo is not None else "--"
+
+            print(f"{str(end):<10} {str(val):<10} {str(prot):<10}")
+
+    print("\n" + "="*60 + "\n")
+
+
 
 def main():
     print("Inicializando o sistema de prontuários médicos...")
@@ -16,8 +56,9 @@ def main():
     p1 = Processador(1, "Enfermeiro")
     p2 = Processador(2, "Farmacêutico")
     lista_processadores = [p0, p1, p2]
-
-    barramento = Barramento(ram, lista_processadores)
+    
+    lista_caches = [p0.cache, p1.cache, p2.cache]
+    barramento = Barramento(ram, lista_caches)
     p0.conecta_barramento(barramento)
     p1.conecta_barramento(barramento)
     p2.conecta_barramento(barramento)

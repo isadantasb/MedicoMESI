@@ -5,7 +5,6 @@ class Cache:
         self.elementos: list[CacheLine] = [CacheLine(None, None, "I") for _ in range(tamanho)] 
         self.topo = 0
         self.tam_max = tamanho
-        self.qtd = 0
 
     def busca(self, endereco):
         #busca um elemento dentro da cache pelo endereço buscado
@@ -14,30 +13,19 @@ class Cache:
                 return elemento
         return None
     
-    def vazia(self) -> bool: 
-        return self.qtd == 0
-    
-    def cheia(self) -> bool:
-        return self.qtd == self.tam_max
-    
     def remove(self):
-        #na vdd ela n ta removendo nada, só ta retornando o topo, quem vai remover de verdade é o Processador.
-        if self.cheia():
-            rem = self.elementos[self.topo]
-            self.qtd -=1
-            return rem
-    
-    def insere(self, x: CacheLine):
-        #se tiver vazia ou tiver espaço vazio só insere. Mas se o topo estiver ocupado tem que remover (e add ele na MP) e ai sim inserir
-        if self.cheia():
-            self.remove()
-        self.elementos[self.topo] = x
-        self.topo = (self.topo + 1) % self.tam_max
-        self.qtd +=1
-
-    def printar_cache(self):
-        print("---- CACHE ----")
-        for i, linha in enumerate(self.elementos):
-            print(f"Linha {i}: {linha.printar()}")
-        print("----------------")
+        rem = self.elementos[self.topo]
+        return rem
         
+    def insere(self, linha_nova: CacheLine):
+        # Se já existe esse endereço na cache, substitui
+        for i, linha in enumerate(self.elementos):
+            if linha is not None and linha.endereco == linha_nova.endereco:
+                self.elementos[i] = linha_nova
+                return 
+        
+        # Caso contrário, insere na primeira posição vazia
+        for i, linha in enumerate(self.elementos):
+            if linha is None or linha.protocolo == "I":
+                self.elementos[i] = linha_nova
+                return 
