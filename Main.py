@@ -1,6 +1,10 @@
 from Memoria import *
 from Processador import *
 from Barramento import *
+import os
+
+def limpar_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def imprimir_estado_geral(memoria, processadores):
     '''
@@ -18,7 +22,7 @@ def imprimir_estado_geral(memoria, processadores):
     print("-"*60)
 
     for end in range(memoria.tamanho):
-        valor = memoria.ler_bloco(end)
+        valor = memoria.ler(end)
         print(f"End {end:02d} | Valor: {valor}")
 
     # -------------------------
@@ -38,10 +42,15 @@ def imprimir_estado_geral(memoria, processadores):
             if linha is None:
                 continue   # linha vazia → ignora
 
-            end = linha.endereco_base if linha.endereco_base is not None else "--"
-            val = linha.dados if linha.dados is not None else "--"
-            prot = linha.protocolo if linha.protocolo is not None else "--"
-
+            # Se a linha tem apenas None nos dados, não mostrar
+            if linha.dados is None or all(d is None for d in linha.dados):
+                end = "--"
+                val = "--"
+                prot = "--"
+            else:
+                end = linha.endereco_base if linha.endereco_base is not None else "--"
+                val = linha.dados
+                prot = linha.protocolo if linha.protocolo is not None else "--"
             print(f"{str(end):<10} {str(val):<10} {str(prot):<10}")
 
     print("\n" + "="*60 + "\n")
@@ -87,9 +96,10 @@ def main():
         elif opcao == '4':
             imprimir_estado_geral(ram, lista_processadores)
             input("Pressione ENTER para voltar...")
+           
         elif opcao == '5':
             print("Encerrando simulador...")
-
+    
         if processador_atual is not None:
             print(f"{processador_atual.nome} foi selecionado, o que deseja fazer? ")
             print("1. ler um Prontuário (Consultar Status)")
@@ -118,6 +128,7 @@ def main():
 
             elif acao == '3':
                 opcao = "0"
+        
 
 
 if __name__ == "__main__":

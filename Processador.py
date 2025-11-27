@@ -36,9 +36,10 @@ class Processador:
         if self.barramento == None:
             print(f'Erro: o {self.nome} não tem um correspondente para enviar a informação')
             return None
-        self.barramento.busca_para_escrita(endereco, self.id, novo_valor)
-        print(f"Agora, o paciente nº {endereco}, se encontra em {status}. Valor alterado no prontuário ")
+        valor_antigo = self.barramento.busca_para_escrita(endereco, self.id, novo_valor)
+        status_antigo = self.traduz_status(valor_antigo)
+        if status == status_antigo:
+            print(f"O paciente nº {endereco} já estava em {status_antigo}. Nenhuma alteração foi necessária")
+            return
+        print(f"Agora, o paciente nº {endereco}: estava em {status_antigo}. Agora está em {status}")
 
-    def mostra_cache(self):
-        print(f"A visão do {self.nome}, é:")
-        self.cache.printar_cache()

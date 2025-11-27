@@ -9,6 +9,10 @@ class MemoriaPrincipal:
         self.validaendereco(endereco)
         return self.celulas[endereco:endereco+5]
     
+    def ler(self, endereco):
+        self.validaendereco(endereco)
+        return self.celulas[endereco]
+    
     def escrever_bloco(self, endereco, dados):
         self.validaendereco(endereco)
         for i in range(5):

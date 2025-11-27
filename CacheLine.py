@@ -1,7 +1,7 @@
 class CacheLine:
-    def __init__(self, endereco_base, protocolo, dados=[None]*5):
+    def __init__(self, endereco_base, dados, protocolo):
         self.endereco_base = endereco_base #endereço da MP que o paciente se encontra
-        self.dados = dados #status do paciente
+        self.dados = dados if dados is not None else [None]*5 #status do paciente
         self.protocolo = protocolo #MOESI
         
     def contem_endereco(self, endereco):
