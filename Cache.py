@@ -2,7 +2,7 @@ from CacheLine import CacheLine
 
 class Cache:
     def __init__(self, tamanho=5):
-        self.elementos: list[CacheLine] = [CacheLine(None, None, "I") for _ in range(tamanho)] 
+        self.elementos: list[CacheLine] = [CacheLine(None, "I") for _ in range(tamanho)] 
         self.topo = 0
         self.tam_max = tamanho
 
