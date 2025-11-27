@@ -6,6 +6,10 @@ import os
 def limpar_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def pausar_e_limpar():
+    input("\nPressione ENTER para voltar ao menu...")
+    limpar_terminal()
+
 def imprimir_estado_geral(memoria, processadores):
     '''
     Exibe o estado completo do sistema: RAM + Caches
@@ -35,23 +39,14 @@ def imprimir_estado_geral(memoria, processadores):
     for proc in processadores:
         print(f"\nProcessador {proc.id} ({proc.nome})")
         print("-"*60)
-        print(f"{'Endereço':<10} {'Valor':<10} {'Protocolo':<10}")
+        print(f"{'Endereço':<20} {'Valor':<20} {'Protocolo':<20}")
         print("-"*60)
 
         for linha in proc.cache.elementos:
-            if linha is None:
-                continue   # linha vazia → ignora
-
-            # Se a linha tem apenas None nos dados, não mostrar
-            if linha.dados is None or all(d is None for d in linha.dados):
-                end = "--"
-                val = "--"
-                prot = "--"
-            else:
-                end = linha.endereco_base if linha.endereco_base is not None else "--"
-                val = linha.dados
-                prot = linha.protocolo if linha.protocolo is not None else "--"
-            print(f"{str(end):<10} {str(val):<10} {str(prot):<10}")
+            end = linha.endereco_base if linha.endereco_base is not None else "--"
+            val = linha.dados if not all(d is None for d in linha.dados) else "--" 
+            prot = linha.protocolo if linha.protocolo is not None else "--"
+            print(f"{str(end):<20} {str(val):<20} {str(prot):<20}")
 
     print("\n" + "="*60 + "\n")
 
@@ -73,7 +68,6 @@ def main():
     p2.conecta_barramento(barramento)
 
     print("Sistema inicializado")
-
     opcao = "0" 
 
     while opcao != "5":
@@ -85,7 +79,7 @@ def main():
         print("5. Sair")
 
         opcao = input("escolha uma opção: ")
-
+        limpar_terminal()
         processador_atual = None
         if opcao == '1':
             processador_atual = p0
@@ -99,35 +93,37 @@ def main():
            
         elif opcao == '5':
             print("Encerrando simulador...")
-    
         if processador_atual is not None:
             print(f"{processador_atual.nome} foi selecionado, o que deseja fazer? ")
-            print("1. ler um Prontuário (Consultar Status)")
-            print("2. escrever em um Prontuário (Atualizar Status)")
+            print("1. Ler um Prontuário (Consultar Status)")
+            print("2. Escrever em um Prontuário (Atualizar Status)")
             print("3. Voltar")
             
             acao = input("O que deseja fazer? ")
-
+            limpar_terminal()
             if acao == '1': 
-                    end = int(input("Digite o Nº do Prontuário (Endereço 0-49): "))
+                    end = int(input("Opção 1. Ler um Prontuário (Consultar Status) selecionada \nDigite o Nº do Prontuário (Endereço 0-49): "))
                     if 0 <= end < 50:
                         processador_atual.ler(end)
                     else:
                         print("Erro: Endereço inválido.")
+                    pausar_e_limpar()
 
             elif acao == '2': 
-                end = int(input("Digite o Nº do Prontuário (Endereço 0-49): "))
+                end = int(input("Opção 2. escrever em um Prontuário (Atualizar Status) selecionada \nDigite o Nº do Prontuário (Endereço 0-49): "))
                 if 0 <= end < 50:
-                    val = int(input("Novo Status (1-4): "))
+                    val = int(input(f"1. Em triagem\n2. Em atendimento\n3. Em medicação\n4. Em alta\nNovo Status (1-4): "))
                     if 1 <= val <= 4:
                         processador_atual.escrever(end, val)
                     else:
                         print("Erro: Status inválido (use 1 a 4).")
                 else:
                     print("Erro: Endereço inválido.")
+                pausar_e_limpar()
 
             elif acao == '3':
                 opcao = "0"
+            
         
 
 

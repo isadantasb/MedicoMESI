@@ -38,3 +38,5 @@ class Cache:
         self.elementos[pos] = linha_nova
 
         return linha_expulsa
+    
+        

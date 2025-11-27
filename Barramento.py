@@ -8,44 +8,51 @@ class Barramento:
         
 
     def busca_processador(self, endereco, id_processador, escrita=False):
-        #pergunta: algum processador tem esse dado q ta nesse endereço? se SIM: compartilha (S) o dado com o processador q ta pedindo e troca oq deu pra Owned, se NÃO: chama busca_MP
-        cache_solicitante: Cache = self.caches[id_processador]
-        
-        linha_local = cache_solicitante.busca(endereco)
-        if linha_local is not None:
+        cache_solicitante = self.caches[id_processador]
+
+        linha_remota = self.procurar_em_outras_caches(endereco, id_processador)
+
+        if linha_remota is not None:
             if not escrita:
-                print(f"[RH] Read Hit | Endereço {endereco} | Estado: {linha_local.protocolo}")    
-            return linha_local.dados[endereco - linha_local.endereco_base]
+                print(f"[RH] Read Hit | Endereço {endereco} | Estado antigo: {linha_remota.protocolo}")
 
+            if linha_remota.protocolo == "M":
+                linha_remota.protocolo = "O"
+            elif linha_remota.protocolo == "E":
+                linha_remota.protocolo = "S"
+
+            # 2 — Insere a linha REMOTA na cache solicitante
+            nova_linha = CacheLine(linha_remota.endereco_base,linha_remota.dados.copy(),"S" if not escrita else "M")
+
+            linha_expulsa = cache_solicitante.insere(nova_linha)
+
+            # Se expulsou algo modificado, write-back
+            if linha_expulsa and linha_expulsa.protocolo in ("M", "O"):
+                self.memoria.escrever_bloco(linha_expulsa.endereco_base, linha_expulsa.dados)
+                print(f"[WRITE-BACK] Endereço {linha_expulsa.endereco_base} → {linha_expulsa.dados}")
+
+            return nova_linha.dados[endereco - nova_linha.endereco_base]
+
+        # 3 — Se não existe em NENHUMA cache → RAM
         if not escrita:
-            print(f"[RM] Read Miss | Endereço {endereco}")  
-        dados = self.procurar_em_outras_caches(endereco, id_processador)
-        
-        if not dados: #Se não achou o dado em nenhum processador vai procurar na MP
-            return self.busca_MP(endereco, id_processador)
-        
-        #SE cair aqui é pq tem o dado em uma cache
-        linha = dados[0]
+            print(f"[RM] Read Miss | Endereço {endereco}")
 
-        if linha.protocolo == "M":
-            linha.protocolo = "O"
-        if linha.protocolo == "E":
-            linha.protocolo = "S"
-        c= cache_solicitante.insere(CacheLine(linha.endereco_base, linha.dados.copy(), "S"))
-        if c and c.protocolo in ("M", "O"):
-            self.memoria.escrever_bloco(c.endereco_base, c.dados)
-            print(f"[WRITE-BACK] Endereço {c.endereco_base} → {c.dados}")
-        return linha.dados[endereco-linha.endereco_base]
+        return self.busca_MP(endereco, id_processador)
+
                 
 
     def busca_para_escrita(self, endereco, id_processador, novo_valor):
         #busca usando as funções de busca. Coloca o dado no endereço desejado (que vai estar S) e dps troca pra M.
-        linha_antiga = self.caches[id_processador].busca(endereco)
-        if linha_antiga is None:
-            print(f"[WM] Write Miss | Endereço {endereco}")
-        else:
-            print(f"[WH] Write Hit | Endereço {endereco} | Estado: {linha_antiga.protocolo}")
+        linha_local = self.caches[id_processador].busca(endereco)
+        linha_remota = self.procurar_em_outras_caches(endereco, id_processador)
+        if linha_local is not None and linha_local.protocolo != "I":
+            print(f"[WH] Write Hit | Endereço {endereco} | Estado antigo: {linha_local.protocolo}")
 
+        elif linha_remota is not None:
+            print(f"[WH] Write Hit | Endereço {endereco} | Estado antigo: {linha_remota.protocolo}")
+
+        else:
+            print(f"[WM] Write Miss | Endereço {endereco}")
         valor = self.busca_processador(endereco, id_processador, escrita=True)
         self.invalida(endereco, id_processador)
 
@@ -78,11 +85,9 @@ class Barramento:
                 linha.protocolo = "I"
     
     def procurar_em_outras_caches(self, endereco, id_processador):
-        encontrados = []
         for indice, cache in enumerate(self.caches):
             if indice == id_processador:
                 continue
             linha = cache.busca(endereco)
             if linha is not None:
-                encontrados.append(linha)
-        return encontrados
+                return linha

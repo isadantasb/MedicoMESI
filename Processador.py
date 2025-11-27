@@ -18,14 +18,14 @@ class Processador:
             return None
         valor = self.barramento.busca_processador(endereco, self.id)
         status = self.traduz_status(valor)
-        print(f"{self.nome} encontrou o status atual do paciente: O paciente se encontra {status}")
+        print(f"{self.nome} encontrou o status atual do paciente: O paciente se encontra no status {valor}. {status}")
 
     def traduz_status(self, valor):
         status = {
-            1: "em triagem",
-            2: "em atendimento",
-            3: "em medicação",
-            4: "em alta"
+            1: "Em triagem",
+            2: "Em atendimento",
+            3: "Em medicação",
+            4: "Em alta"
         }
         return status.get(valor, str(valor))
     
@@ -39,7 +39,7 @@ class Processador:
         valor_antigo = self.barramento.busca_para_escrita(endereco, self.id, novo_valor)
         status_antigo = self.traduz_status(valor_antigo)
         if status == status_antigo:
-            print(f"O paciente nº {endereco} já estava em {status_antigo}. Nenhuma alteração foi necessária")
+            print(f"O paciente nº {endereco} já estava {status_antigo}. Nenhuma alteração foi necessária")
             return
-        print(f"Agora, o paciente nº {endereco}: estava em {status_antigo}. Agora está em {status}")
+        print(f"Agora, o paciente nº {endereco}: estava no status {valor_antigo}. {status_antigo}. Agora está {novo_valor}. {status}")
 
