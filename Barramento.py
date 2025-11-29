@@ -1,5 +1,6 @@
 from Memoria import *
 from Cache import *
+import logging
 
 class Barramento:
     def __init__(self, memoria: MemoriaPrincipal, caches):
@@ -11,10 +12,18 @@ class Barramento:
         cache_solicitante = self.caches[id_processador]
 
         linha_remota = self.procurar_em_outras_caches(endereco, id_processador)
+        linha_local = cache_solicitante.busca(endereco)
+        if linha_local is not None:
+            if not escrita:
+                print(f"[RH] Read Hit | Endereço {endereco} | Estado antigo: {linha_local.protocolo}")
+                logging.info(f"[RH] Read Hit | Endereco {endereco} | Estado antigo: {linha_local.protocolo} | Solicitante: P{id_processador}")
 
+            # Se é leitura, retorna o valor direto
+            return linha_local.dados[endereco - linha_local.endereco_base]
         if linha_remota is not None:
             if not escrita:
                 print(f"[RH] Read Hit | Endereço {endereco} | Estado antigo: {linha_remota.protocolo}")
+                logging.info(f"[RH] Read Hit | Endereco {endereco} | Estado antigo: {linha_remota.protocolo} | Solicitante: P{id_processador}")
 
             if linha_remota.protocolo == "M":
                 linha_remota.protocolo = "O"
@@ -30,12 +39,14 @@ class Barramento:
             if linha_expulsa and linha_expulsa.protocolo in ("M", "O"):
                 self.memoria.escrever_bloco(linha_expulsa.endereco_base, linha_expulsa.dados)
                 print(f"[WRITE-BACK] Endereço {linha_expulsa.endereco_base} → {linha_expulsa.dados}")
+                logging.info(f"[WRITE-BACK] Endereço {linha_expulsa.endereco_base} -> {linha_expulsa.dados}")
 
             return nova_linha.dados[endereco - nova_linha.endereco_base]
 
         # 3 — Se não existe em NENHUMA cache → RAM
         if not escrita:
             print(f"[RM] Read Miss | Endereço {endereco}")
+            logging.info(f"[RM] Read Miss | Endereco {endereco} | Solicitante: P{id_processador}")
 
         return self.busca_MP(endereco, id_processador)
 
@@ -47,12 +58,15 @@ class Barramento:
         linha_remota = self.procurar_em_outras_caches(endereco, id_processador)
         if linha_local is not None and linha_local.protocolo != "I":
             print(f"[WH] Write Hit | Endereço {endereco} | Estado antigo: {linha_local.protocolo}")
+            logging.info(f"[WH] Write Hit | Endereco {endereco} | Estado antigo: {linha_local.protocolo} | Solicitante: P{id_processador}")
 
         elif linha_remota is not None:
             print(f"[WH] Write Hit | Endereço {endereco} | Estado antigo: {linha_remota.protocolo}")
+            logging.info(f"[WH] Write Hit | Endereco {endereco} | Estado antigo: {linha_remota.protocolo} | Solicitante: P{id_processador}")
 
         else:
             print(f"[WM] Write Miss | Endereço {endereco}")
+            logging.info(f"[WM] Write Miss | Endereco {endereco} | Solicitante: P{id_processador}")
         valor = self.busca_processador(endereco, id_processador, escrita=True)
         self.invalida(endereco, id_processador)
 
@@ -72,6 +86,7 @@ class Barramento:
         if c and c.protocolo in ("M", "O"):
             self.memoria.escrever_bloco(c.endereco_base, c.dados)
             print(f"[WRITE-BACK] Endereço {c.endereco_base} → {c.dados}")
+            logging.info(f"[WRITE-BACK] Endereco {c.endereco_base} -> {c.dados}")
         return dados[endereco - base]
 
     def invalida(self, endereco, id_processador):

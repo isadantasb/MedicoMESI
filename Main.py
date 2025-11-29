@@ -2,7 +2,14 @@ from Memoria import *
 from Processador import *
 from Barramento import *
 import os
+import logging
 
+logging.basicConfig(
+    filename="simulacao_mesi.log",  # nome do arquivo
+    level=logging.INFO,             # nível do log
+    format="%(asctime)s - %(message)s",
+    datefmt="%H:%M:%S"
+)
 def limpar_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
