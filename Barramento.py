@@ -3,7 +3,21 @@ from Cache import *
 import logging
 
 class Barramento:
+    '''
+    Representa o barramento do sistema
+    
+    Atua como o intermediário entre os Processadores  e a Memória Principal.
+    É responsável por garantir a coerência de cache (Protocolo MOESI/MESI),
+    implementando a lógica de 'Snooping' (escuta) e invalidação
+    '''
     def __init__(self, memoria: MemoriaPrincipal, caches):
+        '''
+        Inicializa os barramentos
+
+        Parâmetros:
+            memoria (MemoriaPrincipal): A instância da RAM
+            caches (list[Cache]): Lista contendo as caches de todos os processadores
+        '''
         self.memoria = memoria  
         self.caches: list[Cache] = caches   
         
@@ -90,7 +104,10 @@ class Barramento:
         return dados[endereco - base]
 
     def invalida(self, endereco, id_processador):
-        #se fizer a escrita, aqui invalida todas as outras CacheLines que tinham esse dado.
+        '''
+        Manda um sinal de inválido para todas as outras caches quando uma escrita é
+        feita por um processador (um funcionário) e outro possui esse dado
+        '''
         for i, cache in enumerate(self.caches):
             if i == id_processador:
                 continue
@@ -100,6 +117,11 @@ class Barramento:
                 linha.protocolo = "I"
     
     def procurar_em_outras_caches(self, endereco, id_processador):
+        '''
+        Implementa o 'Snooping', procurando nas caches vizinhas a informação desejada
+        
+        Retorna a linha encontrada na cache vizinha (ou None)
+        '''
         for indice, cache in enumerate(self.caches):
             if indice == id_processador:
                 continue
