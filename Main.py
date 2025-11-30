@@ -4,6 +4,8 @@ from Barramento import *
 import os
 import logging
 
+# Configuração do sistema de logs
+# Cria um arquivo 'simulacao_mesi.log' que registra o histórico de todas as operações
 logging.basicConfig(
     filename="simulacao_mesi.log",  # nome do arquivo
     level=logging.INFO,             # nível do log
@@ -26,9 +28,7 @@ def imprimir_estado_geral(memoria, processadores):
     print("ESTADO GERAL DO SISTEMA".center(60))
     print("="*60)
 
-    # -------------------------
-    #  MOSTRAR MEMÓRIA RAM
-    # -------------------------
+    #  Mostrar memória RAM
     print("\nMEMÓRIA PRINCIPAL (RAM):")
     print("-"*60)
 
@@ -36,9 +36,7 @@ def imprimir_estado_geral(memoria, processadores):
         valor = memoria.ler(end)
         print(f"End {end:02d} | Valor: {valor}")
 
-    # -------------------------
-    #  MOSTRAR CACHES
-    # -------------------------
+    #  Mostrar caches
     print("\n" + "="*60)
     print("CACHES DOS PROCESSADORES")
     print("="*60)
